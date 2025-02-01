@@ -65,7 +65,12 @@ const RentDetails = () => {
   const onAddClick = () => {
     showDialog({
       component: (
-        <RentForm hideDialog={hideDialog} refetch={refetch} sheetId={floor} />
+        <RentForm
+          hideDialog={hideDialog}
+          refetch={refetch}
+          sheetId={floor}
+          rentAmount={sheetSummary?.rentPerMonth || 0}
+        />
       ),
       backdropOff: true,
       closeIcon: true
@@ -369,7 +374,9 @@ const RentDetails = () => {
                     }}
                   >
                     {row.electricity.date
-                      ? moment(row.electricity.date, "DD/MM/YYYY").format("DD MMM YYYY")
+                      ? moment(row.electricity.date, "DD/MM/YYYY").format(
+                          "DD MMM YYYY"
+                        )
                       : ""}
                   </TableCell>
                   <TableCell
