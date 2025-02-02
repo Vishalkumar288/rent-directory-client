@@ -17,12 +17,13 @@ import {
 } from "@mui/material";
 import { useCustomDialog } from "../../shared/customDialog";
 import RentForm from "./RentForm";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, BorderColorOutlined } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFetchGetRentDetails } from "../../query-hooks/useFetchGetRentDetails";
 import moment from "moment/moment";
 import { currencyFormatter } from "../../shared/utils";
 import { useInView } from "react-intersection-observer";
+import UpdateValues from "../components/UpdateValues";
 
 export const CustomTypo = styled(Typography)`
   font-weight: 700;
@@ -70,6 +71,20 @@ const RentDetails = () => {
           refetch={refetch}
           sheetId={floor}
           rentAmount={sheetSummary?.rentPerMonth || 0}
+        />
+      ),
+      backdropOff: true,
+      closeIcon: true
+    });
+  };
+
+  const onModifyClick = () => {
+    showDialog({
+      component: (
+        <UpdateValues
+          hideDialog={hideDialog}
+          refetch={refetch}
+          sheetId={floor}
         />
       ),
       backdropOff: true,
@@ -177,7 +192,7 @@ const RentDetails = () => {
         </Grid>
         <Grid
           item
-          xs={2}
+          xs={1.5}
           display={"flex"}
           alignItems={"center"}
           justifyContent={"center"}
@@ -188,13 +203,13 @@ const RentDetails = () => {
                   parseFloat(sheetSummary?.totalElectricityCollected).toFixed(2)
                 )
               : "--",
-            "Total Electricity Collected",
+            "Total Elec. Coll.",
             "yellow"
           )}
         </Grid>
         <Grid
           item
-          xs={2}
+          xs={1.5}
           display={"flex"}
           alignItems={"center"}
           justifyContent={"center"}
@@ -206,17 +221,20 @@ const RentDetails = () => {
                   (+sheetSummary?.totalElectricityCollected || 0)
               ).toFixed(2)
             ),
-            "Total Amount Collected",
+            "Total Amt Coll.",
             "green"
           )}
         </Grid>
         <Grid
           item
-          xs={2}
+          xs={3}
           display={"flex"}
           alignItems={"center"}
-          justifyContent={"right"}
+          justifyContent={"space-evenly"}
         >
+          <Button variant="text" sx={{ color: "#A020F0" }} onClick={onModifyClick}>
+            <BorderColorOutlined/>{"Modify Entry"}
+          </Button>
           <Button variant="text" sx={{ color: "#fff" }} onClick={onAddClick}>
             {"+ Add Entry"}
           </Button>

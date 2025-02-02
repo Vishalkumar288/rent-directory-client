@@ -15,7 +15,7 @@ import moment from "moment";
 import { AntSwitch } from "../../shared/theme/globalTheme";
 import RadioButtonGroup from "../../shared/FormElements/RadioButtonGroup";
 
-const schema = (isSingleEntry = false, isElectricity = false) => {
+export const schema = (isSingleEntry = false, isElectricity = false) => {
   if (isSingleEntry) {
     if (isElectricity) {
       return yup.object({
@@ -42,7 +42,7 @@ const schema = (isSingleEntry = false, isElectricity = false) => {
   }
 };
 
-const Months = [
+export const Months = [
   { name: "January", displayName: "January" },
   { name: "February", displayName: "February" },
   { name: "March", displayName: "March" },
