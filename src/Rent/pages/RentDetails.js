@@ -13,17 +13,25 @@ import {
   Box,
   IconButton,
   CircularProgress,
-  styled
+  styled,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from "@mui/material";
 import { useCustomDialog } from "../../shared/customDialog";
 import RentForm from "./RentForm";
-import { ArrowBack, BorderColorOutlined } from "@mui/icons-material";
+import {
+  ArrowBack,
+  BorderColorOutlined,
+  ExpandMore
+} from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFetchGetRentDetails } from "../../query-hooks/useFetchGetRentDetails";
 import moment from "moment/moment";
 import { currencyFormatter } from "../../shared/utils";
 import { useInView } from "react-intersection-observer";
 import UpdateValues from "../components/UpdateValues";
+import { isMobileOnly } from "react-device-detect";
 
 export const CustomTypo = styled(Typography)`
   font-weight: 700;
@@ -114,6 +122,124 @@ const RentDetails = () => {
     }
   }, [fetchNextPage, hasNextPage, inView]);
 
+  const AmountValues = () => {
+    return (
+      <>
+        <Grid
+          item
+          xs={6}
+          md={1}
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          sx={{
+            border: { xs: "1px solid #fff", md: "none" },
+            height: { xs: "80px", md: "auto" }
+          }}
+        >
+          {SubtotalTypo(
+            sheetSummary?.rentPerMonth
+              ? currencyFormatter(
+                  parseFloat(sheetSummary?.rentPerMonth).toFixed(2)
+                )
+              : "--",
+            "Rent / Month",
+            "#dc143c"
+          )}
+        </Grid>
+        <Grid
+          item
+          xs={6}
+          md={1.5}
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          sx={{
+            border: { xs: "1px solid #fff", md: "none" },
+            height: { xs: "80px", md: "auto" }
+          }}
+        >
+          {SubtotalTypo(
+            sheetSummary?.securityDeposit
+              ? currencyFormatter(
+                  parseFloat(sheetSummary?.securityDeposit).toFixed(2)
+                )
+              : "--",
+            "Security Deposit",
+            "#98fb98"
+          )}
+        </Grid>
+        <Grid
+          item
+          xs={6}
+          md={1.5}
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          sx={{
+            border: { xs: "1px solid #fff", md: "none" },
+            height: { xs: "80px", md: "auto" }
+          }}
+        >
+          {SubtotalTypo(
+            sheetSummary?.totalRentCollected
+              ? currencyFormatter(
+                  parseFloat(sheetSummary?.totalRentCollected).toFixed(2)
+                )
+              : "--",
+            "Total Rent Collected",
+            "#faebd7"
+          )}
+        </Grid>
+        <Grid
+          item
+          xs={6}
+          md={1.5}
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          sx={{
+            border: { xs: "1px solid #fff", md: "none" },
+            height: { xs: "80px", md: "auto" }
+          }}
+        >
+          {SubtotalTypo(
+            sheetSummary?.totalElectricityCollected
+              ? currencyFormatter(
+                  parseFloat(sheetSummary?.totalElectricityCollected).toFixed(2)
+                )
+              : "--",
+            "Total Elec. Coll.",
+            "yellow"
+          )}
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          md={1.5}
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          sx={{
+            border: { xs: "1px solid #fff", md: "none" },
+            height: { xs: "80px", md: "auto" }
+          }}
+        >
+          {SubtotalTypo(
+            currencyFormatter(
+              parseFloat(
+                (+sheetSummary?.totalRentCollected || 0) +
+                  (+sheetSummary?.totalElectricityCollected || 0)
+              ).toFixed(2)
+            ),
+            "Total Amt Coll.",
+            "green"
+          )}
+        </Grid>
+      </>
+    );
+  };
+
   return !isFetched ? (
     <Grid item xs={12} display={"flex"} justifyContent={"center"}>
       <CircularProgress />
@@ -121,8 +247,8 @@ const RentDetails = () => {
   ) : (
     <Box sx={{ backgroundColor: "#000", padding: "20px" }}>
       {/* Header */}
-      <Grid container spacing={2} paddingBottom={2}>
-        <Grid item xs={2} display={"flex"}>
+      <Grid container pb={2}>
+        <Grid item xs={6} md={2} display={"flex"}>
           <IconButton
             size="small"
             onClick={() => {
@@ -139,108 +265,64 @@ const RentDetails = () => {
             {sheetSummary?.floor}
           </Typography>
         </Grid>
+        {!isMobileOnly && <AmountValues />}
         <Grid
           item
-          xs={1}
+          xs={6}
+          md={3}
           display={"flex"}
           alignItems={"center"}
-          justifyContent={"center"}
+          sx={{ justifyContent: { xs: "space-between", md: "space-evenly" } }}
         >
-          {SubtotalTypo(
-            sheetSummary?.rentPerMonth
-              ? currencyFormatter(
-                  parseFloat(sheetSummary?.rentPerMonth).toFixed(2)
-                )
-              : "--",
-            "Rent / Month",
-            "#dc143c"
-          )}
-        </Grid>
-        <Grid
-          item
-          xs={1.5}
-          display={"flex"}
-          alignItems={"center"}
-          justifyContent={"center"}
-        >
-          {SubtotalTypo(
-            sheetSummary?.securityDeposit
-              ? currencyFormatter(
-                  parseFloat(sheetSummary?.securityDeposit).toFixed(2)
-                )
-              : "--",
-            "Security Deposit",
-            "#98fb98"
-          )}
-        </Grid>
-        <Grid
-          item
-          xs={1.5}
-          display={"flex"}
-          alignItems={"center"}
-          justifyContent={"center"}
-        >
-          {SubtotalTypo(
-            sheetSummary?.totalRentCollected
-              ? currencyFormatter(
-                  parseFloat(sheetSummary?.totalRentCollected).toFixed(2)
-                )
-              : "--",
-            "Total Rent Collected",
-            "#faebd7"
-          )}
-        </Grid>
-        <Grid
-          item
-          xs={1.5}
-          display={"flex"}
-          alignItems={"center"}
-          justifyContent={"center"}
-        >
-          {SubtotalTypo(
-            sheetSummary?.totalElectricityCollected
-              ? currencyFormatter(
-                  parseFloat(sheetSummary?.totalElectricityCollected).toFixed(2)
-                )
-              : "--",
-            "Total Elec. Coll.",
-            "yellow"
-          )}
-        </Grid>
-        <Grid
-          item
-          xs={1.5}
-          display={"flex"}
-          alignItems={"center"}
-          justifyContent={"center"}
-        >
-          {SubtotalTypo(
-            currencyFormatter(
-              parseFloat(
-                (+sheetSummary?.totalRentCollected || 0) +
-                  (+sheetSummary?.totalElectricityCollected || 0)
-              ).toFixed(2)
-            ),
-            "Total Amt Coll.",
-            "green"
-          )}
-        </Grid>
-        <Grid
-          item
-          xs={3}
-          display={"flex"}
-          alignItems={"center"}
-          justifyContent={"space-evenly"}
-        >
-          <Button variant="text" sx={{ color: "#A020F0" }} onClick={onModifyClick}>
-            <BorderColorOutlined/>{"Modify Entry"}
+          <Button
+            variant="text"
+            sx={{ color: "#A020F0" }}
+            onClick={onModifyClick}
+          >
+            <BorderColorOutlined />
+            {isMobileOnly ? "Modify" : "Modify Entry"}
           </Button>
           <Button variant="text" sx={{ color: "#fff" }} onClick={onAddClick}>
-            {"+ Add Entry"}
+            {isMobileOnly ? "+ Entry" : "+ Add Entry"}
           </Button>
         </Grid>
       </Grid>
-
+      <Grid item xs={12} sx={{ display: { xs: "block", md: "none" }, mb: 2 }}>
+        <Accordion
+          sx={{
+            boxShadow: "none",
+            border: "none",
+            "&:before": { display: "none" },
+            background: "#A020F0"
+          }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMore sx={{ fontSize: 22, color: "#fff" }} />}
+            sx={{
+              backgroundColor: "#A020F0",
+              border: "none",
+              position: "unset",
+              minHeight: 0,
+              display: "flex",
+              justifyContent: "left"
+            }}
+          >
+            <Typography fontWeight={600} color="#fff">
+              {"Amount Collection"}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails
+            sx={{
+              backgroundColor: "rgb(39, 38, 38)",
+              border: "none"
+            }}
+          >
+            <Grid container>
+              <AmountValues />
+            </Grid>
+          </AccordionDetails>
+        </Accordion>
+      </Grid>
       {/* Table */}
       <TableContainer
         component={Paper}
@@ -249,7 +331,7 @@ const RentDetails = () => {
           backgroundColor: "rgb(39, 38, 38)",
           boxShadow: "none",
           borderRadius: "0",
-          overflow: "hidden",
+          overflow: "auto",
           border: "none"
         }}
       >

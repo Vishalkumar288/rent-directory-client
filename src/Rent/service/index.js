@@ -1,7 +1,10 @@
 import { client } from "../../shared/api/client";
 
-export const googleLoginApi = async (code) => {
-  return await client.get(`/google?code=${code}`);
+export const googleLoginApi = async (token) => {
+  console.log(token)
+  return await client.post(`/google`, {
+    access_token: token
+  });
 };
 
 export const getAllTenants = async () => {

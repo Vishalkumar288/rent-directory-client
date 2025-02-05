@@ -98,24 +98,32 @@ const RentForm = ({ hideDialog, refetch, sheetId, rentAmount }) => {
         if (isElectricity) {
           return [
             moment(data[entry_formKeys.billdate]).format("DD/MM/YYYY"),
-            data[entry_formKeys.billMonth],
+            `${data[entry_formKeys.billMonth]}-${moment(new Date()).format(
+              "YYYY"
+            )}`,
             +data[entry_formKeys.billAmount]
           ];
         } else {
           return [
             moment(data[entry_formKeys.rentDate]).format("DD/MM/YYYY"),
-            data[entry_formKeys.rentMonth],
+            `${data[entry_formKeys.rentMonth]}-${moment(new Date()).format(
+              "YYYY"
+            )}`,
             +data[entry_formKeys.rentAmount]
           ];
         }
       } else {
         return [
           moment(data[entry_formKeys.rentDate]).format("DD/MM/YYYY"),
-          data[entry_formKeys.rentMonth],
+          `${data[entry_formKeys.rentMonth]}-${moment(new Date()).format(
+            "YYYY"
+          )}`,
           +data[entry_formKeys.rentAmount],
           "",
           moment(data[entry_formKeys.billdate]).format("DD/MM/YYYY"),
-          data[entry_formKeys.billMonth],
+          `${data[entry_formKeys.billMonth]}-${moment(new Date()).format(
+            "YYYY"
+          )}`,
           +data[entry_formKeys.billAmount]
         ];
       }

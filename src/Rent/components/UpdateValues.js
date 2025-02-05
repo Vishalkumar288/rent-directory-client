@@ -39,15 +39,21 @@ const UpdateValues = ({ hideDialog, refetch, sheetId }) => {
   useEffect(() => {
     if (fetchedData?.length) {
       if (!isElectricity) {
-        setValue(entry_formKeys.rentDate, new Date(fetchedData[0]));
-        setValue(entry_formKeys.rentMonth, fetchedData[1]);
+        setValue(
+          entry_formKeys.rentDate,
+          new Date(fetchedData[0].split("/").reverse().join("/"))
+        );
+        setValue(entry_formKeys.rentMonth, fetchedData[1].split("-")[0]);
         setValue(
           entry_formKeys.rentAmount,
           parseInt(fetchedData[2]?.replace(/,/g, ""), 10)
         );
       } else {
-        setValue(entry_formKeys.billdate, new Date(fetchedData[0]));
-        setValue(entry_formKeys.billMonth, fetchedData[1]);
+        setValue(
+          entry_formKeys.billdate,
+          new Date(fetchedData[0].split("/").reverse().join("/"))
+        );
+        setValue(entry_formKeys.billMonth, fetchedData[1].split("-")[0]);
         setValue(
           entry_formKeys.billAmount,
           parseInt(fetchedData[2]?.replace(/,/g, ""), 10)
@@ -61,13 +67,17 @@ const UpdateValues = ({ hideDialog, refetch, sheetId }) => {
       if (isElectricity) {
         return [
           moment(data[entry_formKeys.billdate]).format("DD/MM/YYYY"),
-          data[entry_formKeys.billMonth],
+          `${data[entry_formKeys.billMonth]}-${moment(new Date()).format(
+            "YYYY"
+          )}`,
           +data[entry_formKeys.billAmount]
         ];
       } else {
         return [
           moment(data[entry_formKeys.rentDate]).format("DD/MM/YYYY"),
-          data[entry_formKeys.rentMonth],
+          `${data[entry_formKeys.rentMonth]}-${moment(new Date()).format(
+            "YYYY"
+          )}`,
           +data[entry_formKeys.rentAmount]
         ];
       }
@@ -78,8 +88,7 @@ const UpdateValues = ({ hideDialog, refetch, sheetId }) => {
         {
           values: [values],
           sheet: sheetId,
-          month: params?.month,
-          year: params?.year,
+          monthYear: params.monthYear,
           isElectricBill: Boolean(isElectricity)
         },
         {
@@ -88,7 +97,7 @@ const UpdateValues = ({ hideDialog, refetch, sheetId }) => {
             hideDialog();
             refetch();
             enqueueSnackbar(res?.data?.message, { variant: "success" });
-            setParams(null)
+            setParams(null);
           }
         }
       );

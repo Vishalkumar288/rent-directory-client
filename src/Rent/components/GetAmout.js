@@ -9,6 +9,7 @@ import { LoadingButton } from "@mui/lab";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { error_msg } from "../../constants/label";
 import { enqueueSnackbar } from "notistack";
+import { Months } from "../pages/RentForm";
 
 const schema = yup.object({
   getMonth: yup.string().required(error_msg.required),
@@ -20,21 +21,6 @@ const getYearObjects = () =>
     name: 2022 + i,
     displayName: (2022 + i).toString()
   }));
-
-const Months = [
-  { name: 1, displayName: "January" },
-  { name: 2, displayName: "February" },
-  { name: 3, displayName: "March" },
-  { name: 4, displayName: "April" },
-  { name: 5, displayName: "May" },
-  { name: 6, displayName: "June" },
-  { name: 7, displayName: "July" },
-  { name: 8, displayName: "August" },
-  { name: 9, displayName: "September" },
-  { name: 10, displayName: "October" },
-  { name: 11, displayName: "November" },
-  { name: 12, displayName: "December" }
-];
 
 const GetAmout = ({
   isElectricity = false,
@@ -53,12 +39,7 @@ const GetAmout = ({
   const onFindClick = (data) => {
     const filteredParams = {
       sheet: sheetId,
-      month: isElectricity
-        ? +data["getMonth"] === 12
-          ? 1
-          : +data["getMonth"] + 1
-        : +data["getMonth"],
-      year: data["getYear"],
+      monthYear: `${data["getMonth"]}-${data["getYear"]}`,
       ...{ ...(isElectricity ? { isElectricBill: isElectricity } : {}) }
     };
     setParams(filteredParams);
@@ -68,7 +49,7 @@ const GetAmout = ({
     if (Boolean(params) && !isFetching && isSuccess) {
       setFetchedData(data?.amount);
     } // eslint-disable-next-line
-  }, [isFetching, JSON.stringify(params),isSuccess]);
+  }, [isFetching, JSON.stringify(params), isSuccess]);
 
   useEffect(() => {
     if (isError) {

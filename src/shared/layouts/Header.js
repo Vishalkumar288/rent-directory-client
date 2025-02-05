@@ -1,20 +1,24 @@
-import { PersonOutline } from "@mui/icons-material";
 import {
   AppBar,
+  Avatar,
   Button,
   Container,
   Grid,
   Toolbar,
   Typography
 } from "@mui/material";
-import React from "react";
-import { isMobile } from "react-device-detect";
+import React, { useContext } from "react";
+import { isMobileOnly } from "react-device-detect";
 import { useCustomDialog } from "../customDialog";
 import { useLocation, useNavigate } from "react-router-dom";
 import SuccessfulDialog from "../UiElements/SuccessfulDialog";
+import Storage from "../utils/Storage";
+import { AppContext } from "../context/auth-context";
 
 const Header = () => {
   const { showDialog, hideDialog } = useCustomDialog();
+  const { userData } = useContext(AppContext);
+
   const location = useLocation();
   const navigate = useNavigate();
   const isRoot = ["/"].includes(location.pathname);
@@ -28,6 +32,7 @@ const Header = () => {
           btn2Text={"Yes, confirm"}
           btn1Callback={() => hideDialog()}
           btn2Callback={() => {
+            Storage.clear();
             localStorage.clear();
             navigate("/");
             hideDialog();
@@ -104,8 +109,12 @@ const Header = () => {
                 }}
                 onClick={onLogoutClick}
               >
-                <PersonOutline />
-                {!isMobile && <Typography>{"Logout"}</Typography>}
+                <Avatar
+                  alt="profile pic"
+                  src={userData?.user?.picture}
+                  sx={{ width: 30, height: 30, mr: { xs: 0, md: 2 } }}
+                />
+                {!isMobileOnly && <Typography>{"Logout"}</Typography>}
               </Button>
             )}
           </Grid>
