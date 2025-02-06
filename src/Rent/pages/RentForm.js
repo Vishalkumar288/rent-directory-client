@@ -14,6 +14,8 @@ import { enqueueSnackbar } from "notistack";
 import moment from "moment";
 import { AntSwitch } from "../../shared/theme/globalTheme";
 import RadioButtonGroup from "../../shared/FormElements/RadioButtonGroup";
+import Storage from "../../shared/utils/Storage";
+import { StorageKeys } from "../../constants/storageKeys";
 
 export const schema = (isSingleEntry = false, isElectricity = false) => {
   if (isSingleEntry) {
@@ -61,6 +63,7 @@ const RentForm = ({ hideDialog, refetch, sheetId, rentAmount }) => {
   const [isSingleEntry, setIsSingleEntry] = useState(true);
   const [isElectricity, setIsElectricity] = useState(false);
 
+  const isDemoUser = Storage.getItem(StorageKeys.DEMO_LOGIN);
   const handleToggle = () => {
     setIsSingleEntry((prev) => !prev);
   };
@@ -133,7 +136,8 @@ const RentForm = ({ hideDialog, refetch, sheetId, rentAmount }) => {
       {
         values: [values],
         sheet: [[sheetId]],
-        isElectricBill: Boolean(isElectricity)
+        isElectricBill: Boolean(isElectricity),
+        ...{ ...(Boolean(isDemoUser) ? { demoLogin: true } : {}) }
       },
       {
         onSuccess: (res) => {

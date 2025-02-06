@@ -1,14 +1,19 @@
 import { client } from "../../shared/api/client";
 
 export const googleLoginApi = async (token) => {
-  console.log(token)
   return await client.post(`/google`, {
     access_token: token
   });
 };
 
-export const getAllTenants = async () => {
-  return await client.get(`/all-flats`).then((res) => res.data);
+export const demoUserLogin = async () => {
+  return await client.post(`/demo-user`, {});
+};
+
+export const getAllTenants = async (params) => {
+  return await client
+    .get(`/all-flats`, { params: { ...params } })
+    .then((res) => res.data);
 };
 
 export const getAmounts = async (params) => {
@@ -17,9 +22,11 @@ export const getAmounts = async (params) => {
     .then((res) => res.data);
 };
 
-export const getTenantDetails = async (sheetId, page = 1) => {
+export const getTenantDetails = async (sheetId, page = 1, params) => {
   return await client
-    .get(`/recent-entries?sheet=${sheetId}&page=${page}`)
+    .get(`/recent-entries?sheet=${sheetId}&page=${page}`, {
+      params: { ...params }
+    })
     .then((res) => res.data);
 };
 

@@ -14,12 +14,14 @@ import RadioButtonGroup from "../../shared/FormElements/RadioButtonGroup";
 import { Months, schema } from "../pages/RentForm";
 import { useUpdateEntry } from "../../query-hooks/useUpdateEntry";
 import GetAmout from "./GetAmout";
+import { StorageKeys } from "../../constants/storageKeys";
+import Storage from "../../shared/utils/Storage";
 
 const UpdateValues = ({ hideDialog, refetch, sheetId }) => {
   const [params, setParams] = useState();
   const [fetchedData, setFetchedData] = useState([]);
   const [isElectricity, setIsElectricity] = useState(false);
-
+  const isDemoUser = Storage.getItem(StorageKeys.DEMO_LOGIN);
   const { control, handleSubmit, reset, setValue, watch } = useForm({
     resolver: yupResolver(schema(true, isElectricity))
   });
@@ -89,7 +91,8 @@ const UpdateValues = ({ hideDialog, refetch, sheetId }) => {
           values: [values],
           sheet: sheetId,
           monthYear: params.monthYear,
-          isElectricBill: Boolean(isElectricity)
+          isElectricBill: Boolean(isElectricity),
+          ...{ ...(Boolean(isDemoUser) ? { demoLogin: true } : {}) }
         },
         {
           onSuccess: (res) => {

@@ -14,10 +14,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SuccessfulDialog from "../UiElements/SuccessfulDialog";
 import Storage from "../utils/Storage";
 import { AppContext } from "../context/auth-context";
+import { StorageKeys } from "../../constants/storageKeys";
 
 const Header = () => {
   const { showDialog, hideDialog } = useCustomDialog();
-  const { userData } = useContext(AppContext);
+  const { userData, updateUserData } = useContext(AppContext);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -32,6 +33,8 @@ const Header = () => {
           btn2Text={"Yes, confirm"}
           btn1Callback={() => hideDialog()}
           btn2Callback={() => {
+            updateUserData(null);
+            Storage.setItem(StorageKeys.DEMO_LOGIN, null);
             Storage.clear();
             localStorage.clear();
             navigate("/");
@@ -110,7 +113,7 @@ const Header = () => {
                 onClick={onLogoutClick}
               >
                 <Avatar
-                  alt="profile pic"
+                  alt="Demo"
                   src={userData?.user?.picture}
                   sx={{ width: 30, height: 30, mr: { xs: 0, md: 2 } }}
                 />
