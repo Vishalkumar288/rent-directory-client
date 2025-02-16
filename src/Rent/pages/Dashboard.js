@@ -1,10 +1,22 @@
 import React from "react";
 import FloorCard from "../components/FloorCard";
-import { CircularProgress, Grid } from "@mui/material";
+import { Button, CircularProgress, Grid } from "@mui/material";
 import { useFetchAllTenants } from "../../query-hooks/useFetchAllTenants";
+import { useCustomDialog } from "../../shared/customDialog";
+import FinancialReport from "../components/FinancialReport";
 
 const Dashboard = () => {
   const { isFetching, data } = useFetchAllTenants();
+
+  const { showDialog,hideDialog } = useCustomDialog();
+
+  const onFinancialClick = () => {
+    showDialog({
+      component: <FinancialReport close={hideDialog}/>,
+      backdropOff: true
+    });
+  };
+
   return (
     <Grid container spacing={2} sx={{ p: { xs: "15px", md: "25px" } }}>
       {isFetching ? (
@@ -12,19 +24,35 @@ const Dashboard = () => {
           <CircularProgress />
         </Grid>
       ) : (
-        data?.tenants?.map((item, index) => (
-          <Grid item xs={12} md={4} key={index}>
-            <FloorCard
-              floor={item.floor}
-              agreedRent={item.rentPerMonth}
-              securityDeposit={item.securityDeposit}
-              rentStartDate={item.rentStartDate}
-              lastEntryDate={item.lastEntryDate}
-              totalRentPaid={item.totalRentCollected}
-              totalElectricityBill={item.totalElectricityCollected}
-            />
+        <>
+          <Grid container display={"flex"} justifyContent={"right"}>
+            <Button
+              variant="text"
+              sx={{
+                fontWeight: 600,
+                lineHeight: "20px",
+                fontSize: 17,
+                color: "yellow"
+              }}
+              onClick={onFinancialClick}
+            >
+              {"Financial Report >>"}
+            </Button>
           </Grid>
-        ))
+          {data?.tenants?.map((item, index) => (
+            <Grid item xs={12} md={4} key={index}>
+              <FloorCard
+                floor={item.floor}
+                agreedRent={item.rentPerMonth}
+                securityDeposit={item.securityDeposit}
+                rentStartDate={item.rentStartDate}
+                lastEntryDate={item.lastEntryDate}
+                totalRentPaid={item.totalRentCollected}
+                totalElectricityBill={item.totalElectricityCollected}
+              />
+            </Grid>
+          ))}
+        </>
       )}
     </Grid>
   );

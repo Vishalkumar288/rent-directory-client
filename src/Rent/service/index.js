@@ -10,6 +10,16 @@ export const demoUserLogin = async () => {
   return await client.post(`/demo-user`, {});
 };
 
+export const getFormData = async () => {
+  return await client.get(`/tenants/formData`).then((res) => res.data);
+};
+
+export const getFinancialTotal = async (params) => {
+  return await client
+    .get(`/tenants/financial-total`, { params: { ...params } })
+    .then((res) => res.data);
+};
+
 export const getAllTenants = async (params) => {
   return await client
     .get(`/all-flats`, { params: { ...params } })

@@ -16,7 +16,7 @@ const schema = yup.object({
   getYear: yup.string().required(error_msg.required)
 });
 
-const getYearObjects = () =>
+export const getYearObjects = () =>
   Array.from({ length: moment().year() - 2022 + 1 }, (_, i) => ({
     name: 2022 + i,
     displayName: (2022 + i).toString()
