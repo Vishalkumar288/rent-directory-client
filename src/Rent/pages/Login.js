@@ -37,7 +37,7 @@ const Login = () => {
     onSuccess: reponseGoogle,
     onError: reponseGoogle,
     scope: "openid email profile",
-    flow: "implicit" // This ensures the login happens inside a popup
+    flow: "implicit"
   });
 
   const onDemoLogin = () => {
