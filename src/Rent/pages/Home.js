@@ -1,19 +1,16 @@
 import { Box } from "@mui/material";
 import React from "react";
 import Login from "./Login";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const Home = () => {
   return (
     <Box
       display={"flex"}
-      height={"100vh"}
+      sx={{ height: { xs: `calc(100svh - 60px)`, md: `calc(100svh - 72px)` } }}
       justifyContent={"center"}
       alignItems={"center"}
     >
-      <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
-        <Login />
-      </GoogleOAuthProvider>
+      <Login />
     </Box>
   );
 };

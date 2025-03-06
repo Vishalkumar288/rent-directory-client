@@ -1,20 +1,29 @@
-import { KeyboardDoubleArrowRight } from "@mui/icons-material";
+import * as yup from "yup";
+import { BorderColorOutlined, DoneAll, Visibility } from "@mui/icons-material";
 import {
   Box,
-  Button,
   Card,
-  CardActions,
   CardContent,
   Divider,
   Grid,
+  IconButton,
   styled,
   Typography
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { currencyFormatter } from "../../shared/utils";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import appRoutes from "../../shared/navigation/appRoutes";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { error_msg } from "../../constants/label";
+import { useUpdateSummary } from "../../query-hooks/useUpdateSummary";
+import { enqueueSnackbar } from "notistack";
+import { LoadingButton } from "@mui/lab";
+import Storage from "../../shared/utils/Storage";
+import { StorageKeys } from "../../constants/storageKeys";
+import TextInput from "../../shared/FormElements/TextInput";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   border: "0.4px solid #B7BEC7",
@@ -40,6 +49,11 @@ const StyledSecondaryText = styled(Typography)(({ theme }) => ({
   fontWeight: 500
 }));
 
+const schema = yup.object({
+  rent: yup.string().required(error_msg.required),
+  security: yup.string().required(error_msg.required)
+});
+
 const FloorCard = ({
   floor,
   agreedRent,
@@ -47,68 +61,147 @@ const FloorCard = ({
   rentStartDate,
   lastEntryDate,
   totalRentPaid,
+  refetch,
   totalElectricityBill
 }) => {
+  const { control, handleSubmit } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: { rent: agreedRent || 0, security: securityDeposit || 0 }
+  });
+  const [isEditable, setIsEditable] = useState(false);
+  const isDemoUser = Storage.getItem(StorageKeys.DEMO_LOGIN);
   const navigate = useNavigate();
+
+  const handleEdit = () => {
+    setIsEditable((prev) => !prev);
+  };
+
+  const { mutate, isLoading, error, isError } = useUpdateSummary();
+
+  const onSaveClick = (data) => {
+    mutate(
+      {
+        flat: floor,
+        values: [[+data["rent"], +data["security"]]],
+        ...{ ...(Boolean(isDemoUser) ? { demoLogin: true } : {}) }
+      },
+      {
+        onSuccess: (res) => {
+          handleEdit();
+          refetch();
+          enqueueSnackbar("Updated Summary", { variant: "success" });
+        }
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (isError)
+      enqueueSnackbar(error?.response?.data?.message, { variant: "error" });
+  }, [error?.response?.data?.message, isError]);
+
   return (
     <StyledCard>
       <CardContent>
         <Grid container spacing={2}>
-          <Grid item xs={6} display={"flex"} alignItems={"center"}>
-            <Typography sx={{ fontWeight: 700, fontSize: 22, color: "#fff" }}>
+          <Grid item xs={8} display={"flex"} alignItems={"center"}>
+            <Typography
+              sx={{
+                fontWeight: { xs: 600, md: 700 },
+                fontSize: { xs: 18, md: 22 },
+                color: "#fff"
+              }}
+            >
               {floor || "--"}
             </Typography>
           </Grid>
           <Grid
             item
-            xs={6}
+            xs={4}
             display={"flex"}
             alignItems={"center"}
-            justifyContent={"right"}
+            justifyContent={isEditable ? "right" : "space-evenly"}
           >
-            <CardActions>
-              <Button
-                variant="outlined"
-                sx={{
-                  minHeight: "30px",
-                  color: "#fff",
-                  border: "1px solid #fff"
-                }}
-                onClick={() => navigate(`${appRoutes.tenants.main}/${floor}`)}
+            {isEditable ? (
+              <IconButton
+                component={LoadingButton}
+                loading={isLoading}
+                onClick={handleSubmit(onSaveClick)}
+                sx={{ minWidth: "40px !important", width: "40px" }}
               >
-                {"View Details "}
-                <KeyboardDoubleArrowRight />
-              </Button>
-            </CardActions>
+                <DoneAll sx={{ color: "green" }} />
+              </IconButton>
+            ) : (
+              <>
+                <IconButton
+                  onClick={() => navigate(`${appRoutes.tenants.main}/${floor}`)}
+                  sx={{ border: "0.4px solid #fff" }}
+                >
+                  <Visibility sx={{ color: "#fff" }} />
+                </IconButton>
+                <IconButton onClick={handleEdit}>
+                  <BorderColorOutlined sx={{ color: "yellow" }} />
+                </IconButton>
+              </>
+            )}
           </Grid>
           <Grid item xs={12}>
             <Divider sx={{ border: "1px solid #fff" }} />
           </Grid>
           <Grid item xs={4} display="flex" justifyContent={"space-between"}>
             <Box display="flex" flexDirection="column">
-              <StyledPrimaryText color="#98fb98">
-                {Boolean(securityDeposit)
-                  ? `${currencyFormatter(Math.floor(securityDeposit))}`
-                  : "--"}
-              </StyledPrimaryText>
-              <StyledSecondaryText>{"Security Deposit"}</StyledSecondaryText>
+              {isEditable ? (
+                <TextInput
+                  control={control}
+                  name={"security"}
+                  placeholder={"Deposit"}
+                  type="number"
+                  sx={{ height: "30px", width: "100px" }}
+                />
+              ) : (
+                <StyledPrimaryText
+                  color="#98fb98"
+                  sx={{ fontSize: { xs: 14, md: 16 } }}
+                >
+                  {Boolean(securityDeposit)
+                    ? `${currencyFormatter(Math.floor(securityDeposit))}`
+                    : "--"}
+                </StyledPrimaryText>
+              )}
+              <StyledSecondaryText>{"Security Dep."}</StyledSecondaryText>
             </Box>
             <Divider orientation="vertical" sx={{ border: "1px solid #fff" }} />
           </Grid>
           <Grid item xs={4} display="flex" justifyContent={"space-between"}>
             <Box display="flex" flexDirection="column">
-              <StyledPrimaryText color="#dc143c">
-                {Boolean(agreedRent)
-                  ? `${currencyFormatter(Math.floor(agreedRent))}`
-                  : "--"}
-              </StyledPrimaryText>
+              {isEditable ? (
+                <TextInput
+                  control={control}
+                  name={"rent"}
+                  placeholder={"Rent"}
+                  type="number"
+                  sx={{ height: "30px", width: "100px" }}
+                />
+              ) : (
+                <StyledPrimaryText
+                  color="#dc143c"
+                  sx={{ fontSize: { xs: 14, md: 16 } }}
+                >
+                  {Boolean(agreedRent)
+                    ? `${currencyFormatter(Math.floor(agreedRent))}`
+                    : "--"}
+                </StyledPrimaryText>
+              )}
               <StyledSecondaryText>{"Rent / Month"}</StyledSecondaryText>
             </Box>
             <Divider orientation="vertical" sx={{ border: "1px solid #fff" }} />
           </Grid>
           <Grid item xs={4}>
             <Box display="flex" flexDirection="column">
-              <StyledPrimaryText color="pink" sx={{ fontSize: 16 }}>
+              <StyledPrimaryText
+                color="pink"
+                sx={{ fontSize: { xs: 14, md: 16 } }}
+              >
                 {Boolean(rentStartDate)
                   ? `${moment(rentStartDate, "DD/MM/YYYY").format(
                       "DD MMM YYYY"
@@ -123,9 +216,14 @@ const FloorCard = ({
           </Grid>
           <Grid item xs={4} display="flex" justifyContent={"space-between"}>
             <Box display="flex" flexDirection="column">
-              <StyledPrimaryText color="#faebd7" sx={{ fontSize: 16 }}>
+              <StyledPrimaryText
+                color="#faebd7"
+                sx={{ fontSize: { xs: 14, md: 16 } }}
+              >
                 {Boolean(lastEntryDate)
-                  ? `${moment(lastEntryDate, "DD/MM/YYYY").format("DD MMM YYYY")}`
+                  ? `${moment(lastEntryDate, "DD/MM/YYYY").format(
+                      "DD MMM YYYY"
+                    )}`
                   : "--"}
               </StyledPrimaryText>
               <StyledSecondaryText>{"Last Paid on"}</StyledSecondaryText>
@@ -134,7 +232,10 @@ const FloorCard = ({
           </Grid>
           <Grid item xs={4} display="flex" justifyContent={"space-between"}>
             <Box display="flex" flexDirection="column">
-              <StyledPrimaryText color="orange">
+              <StyledPrimaryText
+                color="orange"
+                sx={{ fontSize: { xs: 14, md: 16 } }}
+              >
                 {Boolean(totalRentPaid)
                   ? `${currencyFormatter(Math.floor(totalRentPaid))}`
                   : "--"}
@@ -145,7 +246,10 @@ const FloorCard = ({
           </Grid>
           <Grid item xs={4}>
             <Box display="flex" flexDirection="column">
-              <StyledPrimaryText color="yellow">
+              <StyledPrimaryText
+                color="yellow"
+                sx={{ fontSize: { xs: 14, md: 16 } }}
+              >
                 {Boolean(totalElectricityBill)
                   ? `${currencyFormatter(Math.floor(totalElectricityBill))}`
                   : "--"}

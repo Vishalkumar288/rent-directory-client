@@ -1,12 +1,14 @@
 import {
   FormControl,
   FormHelperText,
+  IconButton,
   InputBase,
   InputLabel
 } from "@mui/material";
 
 import { Controller } from "react-hook-form";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const TextInput = ({
   label,
@@ -26,7 +28,10 @@ const TextInput = ({
   isOrderTypeFilter = false
 }) => {
   const inputRef = useRef(null);
-
+  const [showPassWord, setShowPassWord] = useState(false);
+  const handleShowPassword = () => {
+    setShowPassWord((prev) => !prev);
+  };
   useEffect(() => {
     if (type === "number") {
       inputRef.current.addEventListener("wheel", (event) => {
@@ -94,7 +99,7 @@ const TextInput = ({
             ref={inputRef}
             placeholder={placeholder}
             error={!!error}
-            type={type}
+            type={showPassWord ? "text" : type}
             startAdornment={startIcon}
             multiline={multiline}
             rows={1}
@@ -106,15 +111,27 @@ const TextInput = ({
             onChange={(e) => handleChange(e, field)}
             onKeyDown={handleKeyDown}
             endAdornment={
-              EndIcon && (
-                <EndIcon
-                  fontSize="15"
-                  sx={{ mr: "12px", cursor: "pointer", color: "#607088" }}
-                  onClick={(e) => {
-                    inputRef.current.click();
-                  }}
-                />
-              )
+              <>
+                {EndIcon && (
+                  <EndIcon
+                    fontSize="15"
+                    sx={{ mr: "12px", cursor: "pointer", color: "#607088" }}
+                    onClick={(e) => {
+                      inputRef.current.click();
+                    }}
+                  />
+                )}
+                {type === "password" &&
+                  (showPassWord ? (
+                    <IconButton onClick={handleShowPassword}>
+                      <VisibilityOff />
+                    </IconButton>
+                  ) : (
+                    <IconButton onClick={handleShowPassword}>
+                      <Visibility />
+                    </IconButton>
+                  ))}
+              </>
             }
           />
           {helperText && (

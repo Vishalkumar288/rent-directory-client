@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Divider, Grid, Typography } from "@mui/material";
+import { Button, Divider, Grid } from "@mui/material";
 import DateInput from "../../shared/FormElements/DateInput";
 import { entry_formKeys } from "../../constants/formKeys";
 import DropDown from "../../shared/FormElements/DropDown";
@@ -150,14 +150,7 @@ const UpdateValues = ({ hideDialog, refetch, sheetId }) => {
             alignItems={"center"}
             columnSpacing={1}
           >
-            <Grid item xs={4}>
-              <Typography
-                sx={{ fontSize: "20px", fontWeight: 700, color: "#85BB65" }}
-              >
-                {"Rent"}
-              </Typography>
-            </Grid>
-            <Grid item xs={8}>
+            <Grid item xs={12}>
               <GetAmout
                 sheetId={sheetId}
                 isElectricity={isElectricity}
@@ -206,14 +199,7 @@ const UpdateValues = ({ hideDialog, refetch, sheetId }) => {
             alignItems={"center"}
             columnSpacing={1}
           >
-            <Grid item xs={4}>
-              <Typography
-                sx={{ fontSize: "20px", fontWeight: 700, color: "#ffe047" }}
-              >
-                {"Electric Bill"}
-              </Typography>
-            </Grid>
-            <Grid item xs={8}>
+            <Grid item xs={12}>
               <GetAmout
                 sheetId={sheetId}
                 isElectricity={isElectricity}

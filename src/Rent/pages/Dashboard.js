@@ -6,13 +6,13 @@ import { useCustomDialog } from "../../shared/customDialog";
 import FinancialReport from "../components/FinancialReport";
 
 const Dashboard = () => {
-  const { isFetching, data } = useFetchAllTenants();
+  const { isFetching, data, refetch } = useFetchAllTenants();
 
-  const { showDialog,hideDialog } = useCustomDialog();
+  const { showDialog, hideDialog } = useCustomDialog();
 
   const onFinancialClick = () => {
     showDialog({
-      component: <FinancialReport close={hideDialog}/>,
+      component: <FinancialReport close={hideDialog} />,
       backdropOff: true
     });
   };
@@ -48,6 +48,7 @@ const Dashboard = () => {
                 rentStartDate={item.rentStartDate}
                 lastEntryDate={item.lastEntryDate}
                 totalRentPaid={item.totalRentCollected}
+                refetch={refetch}
                 totalElectricityBill={item.totalElectricityCollected}
               />
             </Grid>

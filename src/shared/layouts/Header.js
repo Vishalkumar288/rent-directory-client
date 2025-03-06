@@ -113,10 +113,16 @@ const Header = () => {
                 onClick={onLogoutClick}
               >
                 <Avatar
-                  alt="Demo"
-                  src={userData?.user?.picture}
-                  sx={{ width: 30, height: 30, mr: { xs: 0, md: 2 } }}
-                />
+                  alt={userData?.user?.name}
+                  sx={{
+                    width: 30,
+                    height: 30,
+                    mr: { xs: 0, md: 2 },
+                    bgcolor: "pink"
+                  }}
+                >
+                  {userData?.user?.name?.charAt(0)?.toUpperCase()}
+                </Avatar>
                 {!isMobileOnly && <Typography>{"Logout"}</Typography>}
               </Button>
             )}
