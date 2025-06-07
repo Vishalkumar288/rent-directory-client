@@ -43,6 +43,7 @@ const Dashboard = () => {
             <Grid item xs={12} md={4} key={index}>
               <FloorCard
                 floor={item.floor}
+                status={item.status}
                 agreedRent={item.rentPerMonth}
                 securityDeposit={item.securityDeposit}
                 rentStartDate={item.rentStartDate}

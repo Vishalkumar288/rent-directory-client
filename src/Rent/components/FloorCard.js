@@ -24,6 +24,7 @@ import { LoadingButton } from "@mui/lab";
 import Storage from "../../shared/utils/Storage";
 import { StorageKeys } from "../../constants/storageKeys";
 import TextInput from "../../shared/FormElements/TextInput";
+import { StyledChip } from "../../shared/UiElements/StatusChip";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   border: "0.4px solid #B7BEC7",
@@ -56,6 +57,7 @@ const schema = yup.object({
 
 const FloorCard = ({
   floor,
+  status,
   agreedRent,
   securityDeposit,
   rentStartDate,
@@ -104,7 +106,7 @@ const FloorCard = ({
     <StyledCard>
       <CardContent>
         <Grid container spacing={2}>
-          <Grid item xs={8} display={"flex"} alignItems={"center"}>
+          <Grid item xs={4} md={4.5} display={"flex"} alignItems={"center"}>
             <Typography
               sx={{
                 fontWeight: { xs: 600, md: 700 },
@@ -114,6 +116,16 @@ const FloorCard = ({
             >
               {floor || "--"}
             </Typography>
+          </Grid>
+          <Grid
+            item
+            md={3.5}
+            xs={4}
+            display={"flex"}
+            alignItems={"center"}
+            justifyContent={"center"}
+          >
+            <StyledChip label={status} />
           </Grid>
           <Grid
             item
