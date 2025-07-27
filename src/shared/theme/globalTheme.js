@@ -48,6 +48,19 @@ export const globalTheme = createTheme({
           }
         },
         {
+          props: { variant: "softError" },
+          style: ({ theme }) => {
+            return {
+              color: "#fff",
+              backgroundColor: theme.palette.error.main,
+              "&:hover": {
+                backgroundColor: theme.palette.error.main,
+                color: "white"
+              }
+            };
+          }
+        },
+        {
           props: { variant: "link" },
           style: ({ theme }) => {
             return {

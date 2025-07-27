@@ -48,6 +48,10 @@ export const updateEntry = async (data) => {
   return await client.put(`/amount`, { ...data });
 };
 
+export const deleteEntry = async (data) => {
+  return await client.delete(`/amount`, { params: { ...data }});
+};
+
 export const updateSummary = async (data) => {
   return await client.put(`/update-summary`, { ...data });
 };
